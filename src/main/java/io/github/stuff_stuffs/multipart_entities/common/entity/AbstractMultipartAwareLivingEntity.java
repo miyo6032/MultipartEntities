@@ -7,6 +7,26 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * You probably want to extend this.
+ *
+ * Also you should update override the tick function and do the following
+ *<pre>
+ * {@code
+ * public class FooEntity extends AbstractMultipartAwareLivingEntity {
+ *     @Override
+ *     public void tick() {
+ *         super.tick();
+ *         EntityPart body = bounds.getPart("body");
+ *         body.setX(getX());
+ *         body.setY(getY());
+ *         body.setZ(getZ());
+ *     }
+ * }
+ * }
+ * </pre>
+ * Where "body" is the central piece in the box hierarchy
+ */
 public abstract class AbstractMultipartAwareLivingEntity extends LivingEntity implements MultipartAwareEntity {
     protected final EntityBounds bounds;
     protected @Nullable String nextDamagedPart;
