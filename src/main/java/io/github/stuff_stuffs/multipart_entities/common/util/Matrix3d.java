@@ -53,15 +53,15 @@ public final class Matrix3d {
     }
 
     public Matrix3d multiply(final Matrix3d other) {
-        final double a00 = this.m00 * other.m00 + m01 * other.m10 + m02 * other.m20;
-        final double a01 = this.m00 * other.m01 + this.m01 * other.m11 + m02 * other.m21;
-        final double a02 = this.m00 * other.m02 + this.m01 * other.m12 + this.m02 * other.m22;
-        final double a10 = this.m10 * other.m00 + m11 * other.m10 + m12 * other.m20;
-        final double a11 = this.m10 * other.m01 + this.m11 * other.m11 + m12 * other.m21;
-        final double a12 = this.m10 * other.m02 + this.m11 * other.m12 + this.m12 * other.m22;
-        final double a20 = this.m20 * other.m00 + m21 * other.m10 + m22 * other.m20;
-        final double a21 = this.m20 * other.m01 + this.m21 * other.m11 + m22 * other.m21;
-        final double a22 = this.m20 * other.m02 + this.m21 * other.m12 + this.m22 * other.m22;
+        final double a00 = m00 * other.m00 + m01 * other.m10 + m02 * other.m20;
+        final double a01 = m00 * other.m01 + m01 * other.m11 + m02 * other.m21;
+        final double a02 = m00 * other.m02 + m01 * other.m12 + m02 * other.m22;
+        final double a10 = m10 * other.m00 + m11 * other.m10 + m12 * other.m20;
+        final double a11 = m10 * other.m01 + m11 * other.m11 + m12 * other.m21;
+        final double a12 = m10 * other.m02 + m11 * other.m12 + m12 * other.m22;
+        final double a20 = m20 * other.m00 + m21 * other.m10 + m22 * other.m20;
+        final double a21 = m20 * other.m01 + m21 * other.m11 + m22 * other.m21;
+        final double a22 = m20 * other.m02 + m21 * other.m12 + m22 * other.m22;
         return new Matrix3d(a00, a01, a02, a10, a11, a12, a20, a21, a22);
     }
 
@@ -90,15 +90,15 @@ public final class Matrix3d {
         return new Vec3d(m00 * x + m01 * y + m02 * z, m10 * x + m11 * y + m12 * z, m20 * x + m21 * y + m22 * z);
     }
 
-    public double transformX(double x, double y, double z) {
+    public double transformX(final double x, final double y, final double z) {
         return m00 * x + m01 * y + m02 * z;
     }
 
-    public double transformY(double x, double y, double z) {
+    public double transformY(final double x, final double y, final double z) {
         return m10 * x + m11 * y + m12 * z;
     }
 
-    public double transformZ(double x, double y, double z) {
+    public double transformZ(final double x, final double y, final double z) {
         return m20 * x + m21 * y + m22 * z;
     }
 }

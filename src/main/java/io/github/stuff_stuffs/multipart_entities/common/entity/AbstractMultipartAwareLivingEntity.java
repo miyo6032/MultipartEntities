@@ -9,9 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * You probably want to extend this.
- *
+ * <p>
  * Also you should update override the tick function and do the following
- *<pre>
+ * <pre>
  * {@code
  * public class FooEntity extends AbstractMultipartAwareLivingEntity {
  *     @Override

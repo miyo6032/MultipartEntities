@@ -21,14 +21,15 @@ public interface MultipartAwareEntity extends MultipartEntity {
      * This will be called right before {@link Entity#damage(DamageSource, float)} is called, the part should be stored until then
      * and reset to null after {@link Entity#damage(DamageSource, float)} is called.
      * A part of null indicates a damage not done by entity, for example, suffocation, void damage, etc.
+     *
      * @param part The part hit by the attacker, may be null
      */
     void setNextDamagedPart(@Nullable String part);
 
     /**
      * @param entity The entity interacting with this
-     * @param hand The hand the entity is using
-     * @param part The part it is interacting with, should not be null
+     * @param hand   The hand the entity is using
+     * @param part   The part it is interacting with, should not be null
      * @return Same as vanilla interact
      */
     default ActionResult interact(final Entity entity, final Hand hand, final String part) {

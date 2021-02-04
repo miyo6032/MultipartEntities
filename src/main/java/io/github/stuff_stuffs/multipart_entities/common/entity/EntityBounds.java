@@ -37,7 +37,7 @@ public final class EntityBounds {
 
     /**
      * @param start Starting position of raycast
-     * @param end Ending position of raycast
+     * @param end   Ending position of raycast
      * @return Part name the ray first intersects, or null if no part was intersected
      */
     public @Nullable String raycast(final Vec3d start, final Vec3d end) {
@@ -105,6 +105,7 @@ public final class EntityBounds {
 
         /**
          * Adds a new hit box to the builder
+         *
          * @param name The name of the part, duplicates not allowed
          * @return The hit box builder
          */
@@ -117,12 +118,12 @@ public final class EntityBounds {
 
         public Factory getFactory() {
             //defensive copy
-            Map<String, EntityPartInfo> copy = new Object2ObjectLinkedOpenHashMap<>(partInfos);
+            final Map<String, EntityPartInfo> copy = new Object2ObjectLinkedOpenHashMap<>(partInfos);
             return () -> {
                 final Map<String, EntityPart> partMap = new Object2ObjectOpenHashMap<>();
                 for (final Map.Entry<String, EntityPartInfo> entry : copy.entrySet()) {
                     final EntityPartInfo info = entry.getValue();
-                    final EntityPart entityPart = new EntityPart(info.parent != null ? partMap.get(info.parent) : null, info.bounds, false, info.name);
+                    final EntityPart entityPart = new EntityPart(info.parent != null ? partMap.get(info.parent) : null, info.bounds, false);
                     entityPart.setX(info.x);
                     entityPart.setY(info.y);
                     entityPart.setZ(info.z);
@@ -152,6 +153,7 @@ public final class EntityBounds {
 
         /**
          * Set position relative to parent, or absolute position if parent is null
+         *
          * @param x X pos
          * @param y Y Pos
          * @param z Z pos
@@ -166,6 +168,7 @@ public final class EntityBounds {
 
         /**
          * Set pivot position around which this will be rotated
+         *
          * @param x X pivot pos
          * @param y Y pivot pos
          * @param z Z pivot pos
@@ -189,6 +192,7 @@ public final class EntityBounds {
 
         /**
          * Set bounding box, you should probably use {@link #setBounds(double, double, double)} instead unless you know hat you are doing
+         *
          * @param bounds Bounding box
          * @return this
          */
@@ -199,6 +203,7 @@ public final class EntityBounds {
 
         /**
          * Set dimensions of the box, you should prefer this to {@link #setBounds(Box)}
+         *
          * @param xLength width
          * @param yLength height
          * @param zLength depth

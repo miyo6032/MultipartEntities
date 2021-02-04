@@ -11,15 +11,13 @@ import org.jetbrains.annotations.Nullable;
 public final class EntityPart {
     private boolean changed = true;
     private double x, y, z;
-    private final String name;
     private final Box box;
     private double px, py, pz;
     private QuaternionD rotation;
     private @Nullable EntityPart parent;
 
-    EntityPart(final @Nullable EntityPart parent, Box box, final boolean center, String name) {
+    EntityPart(final @Nullable EntityPart parent, Box box, final boolean center) {
         this.parent = parent;
-        this.name = name;
         rotation = QuaternionD.IDENTITY;
         if (center) {
             box = box.offset(-box.minX - box.getXLength() / 2, -box.minY - box.getXLength() / 2, -box.minZ - box.getXLength() / 2);
@@ -27,7 +25,7 @@ public final class EntityPart {
         this.box = box;
     }
 
-    void setParent(@Nullable EntityPart parent) {
+    void setParent(@Nullable final EntityPart parent) {
         this.parent = parent;
     }
 
@@ -58,7 +56,7 @@ public final class EntityPart {
     /**
      * @param px X coordinate of point this part should be rotated around
      */
-    public void setPivotX(double px) {
+    public void setPivotX(final double px) {
         this.px = px;
         changed = true;
     }
@@ -66,7 +64,7 @@ public final class EntityPart {
     /**
      * @param py X coordinate of point this part should be rotated around
      */
-    public void setPivotY(double py) {
+    public void setPivotY(final double py) {
         this.py = py;
         changed = true;
     }
@@ -74,7 +72,7 @@ public final class EntityPart {
     /**
      * @param pz X coordinate of point this part should be rotated around
      */
-    public void setPivotZ(double pz) {
+    public void setPivotZ(final double pz) {
         this.pz = pz;
         changed = true;
     }
@@ -89,7 +87,17 @@ public final class EntityPart {
         changed = true;
     }
 
-    void setChanged(boolean changed) {
+    public void rotate(final double pitch, final double yaw, final double roll, final boolean degrees) {
+        rotation = rotation.hamiltonProduct(new QuaternionD(pitch, yaw, roll, degrees));
+        changed = true;
+    }
+
+    public void setRotation(final double pitch, final double yaw, final double roll, final boolean degrees) {
+        rotation = new QuaternionD(pitch, yaw, roll, degrees);
+        changed = true;
+    }
+
+    void setChanged(final boolean changed) {
         this.changed = changed;
     }
 
