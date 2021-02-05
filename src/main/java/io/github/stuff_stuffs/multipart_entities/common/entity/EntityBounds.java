@@ -123,10 +123,7 @@ public final class EntityBounds {
                 final Map<String, EntityPart> partMap = new Object2ObjectOpenHashMap<>();
                 for (final Map.Entry<String, EntityPartInfo> entry : copy.entrySet()) {
                     final EntityPartInfo info = entry.getValue();
-                    final EntityPart entityPart = new EntityPart(info.parent != null ? partMap.get(info.parent) : null, info.bounds, false);
-                    entityPart.setX(info.x);
-                    entityPart.setY(info.y);
-                    entityPart.setZ(info.z);
+                    final EntityPart entityPart = new EntityPart(info.parent != null ? partMap.get(info.parent) : null, info.bounds, false, info.x, info.y, info.z);
                     entityPart.setPivotX(info.px);
                     entityPart.setPivotY(info.py);
                     entityPart.setPivotZ(info.pz);
@@ -159,7 +156,7 @@ public final class EntityBounds {
          * @param z Z pos
          * @return this
          */
-        public EntityPartInfoBuilder setPos(final double x, final double y, final double z) {
+        public EntityPartInfoBuilder setOffset(final double x, final double y, final double z) {
             this.x = x;
             this.y = y;
             this.z = z;

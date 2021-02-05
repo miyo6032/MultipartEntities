@@ -28,7 +28,7 @@ public class MixinEntityRenderDispatcher {
                 final Vec3d center = orientedBox.getCenter();
                 matrix.translate(center.x, center.y, center.z);
                 matrix.multiply(orientedBox.getRotation().toFloatQuat());
-                WorldRenderer.drawBox(matrix, vertices, orientedBox.getExtents(), red, green, blue, 1);
+                WorldRenderer.drawBox(matrix, vertices, orientedBox.getExtents(), 0, 0, 1, 1);
                 matrix.pop();
             }
             box.toVoxelShape().forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> WorldRenderer.drawBox(matrix, vertices, minX, minY, minZ, maxX, maxY, maxZ, 0, green, 0, 1f));

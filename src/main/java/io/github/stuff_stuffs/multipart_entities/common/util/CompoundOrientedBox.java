@@ -39,7 +39,14 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
 
     @Override
     public Box expand(final double x, final double y, final double z) {
-        return this;
+        final List<OrientedBox> orientedBoxes = new ObjectArrayList<>(boxes.size());
+        for (final OrientedBox box : boxes) {
+            orientedBoxes.add(box.expand(x,y,z));
+        }
+        if (cached != null) {
+            return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z));
+        }
+        return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes);
     }
 
     @Override

@@ -288,4 +288,11 @@ public final class OrientedBox {
         }
         throw new NullPointerException();
     }
+
+    public OrientedBox expand(double x, double y, double z) {
+        if(x==0&&y==0&&z==0) {
+            return this;
+        }
+        return new OrientedBox(center, halfExtents.add(x/2,y/2,z/2), rotation, matrix, inverse, basis);
+    }
 }

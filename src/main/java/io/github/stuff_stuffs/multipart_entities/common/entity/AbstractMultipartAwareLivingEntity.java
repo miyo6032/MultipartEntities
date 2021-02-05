@@ -10,17 +10,23 @@ import org.jetbrains.annotations.Nullable;
 /**
  * You probably want to extend this.
  * <p>
- * Also you should update override the tick function and do the following
+ * Also you must update override the setPos function and do the following:
  * <pre>
  * {@code
  * public class FooEntity extends AbstractMultipartAwareLivingEntity {
+ *      private static final EntityBounds.Factory ENTITY_BOUNDS_FACTORY = ....;
+ *
+ *      protected EntityBounds createBounds() {
+ *          return ENTITY_BOUNDS_FACTORY.create();
+ *      }
+ *
  *     @Override
- *     public void tick() {
- *         super.tick();
+ *     public void setPos(double x, double y, double z) {
+ *         super.setPos(x, y, z);
  *         EntityPart body = bounds.getPart("body");
- *         body.setX(getX());
- *         body.setY(getY());
- *         body.setZ(getZ());
+ *         body.setX(x);
+ *         body.setY(y);
+ *         body.setZ(z);
  *     }
  * }
  * }
@@ -28,13 +34,15 @@ import org.jetbrains.annotations.Nullable;
  * Where "body" is the central piece in the box hierarchy
  */
 public abstract class AbstractMultipartAwareLivingEntity extends LivingEntity implements MultipartAwareEntity {
-    protected final EntityBounds bounds;
+    protected EntityBounds bounds;
     protected @Nullable String nextDamagedPart;
 
-    protected AbstractMultipartAwareLivingEntity(final EntityType<? extends LivingEntity> entityType, final World world, final EntityBounds.Factory boundsFactory) {
+    protected AbstractMultipartAwareLivingEntity(final EntityType<? extends LivingEntity> entityType, final World world) {
         super(entityType, world);
-        bounds = boundsFactory.create();
+        bounds = createBounds();
     }
+
+    protected abstract EntityBounds createBounds();
 
     @Override
     public CompoundOrientedBox getBoundingBox() {
@@ -51,6 +59,14 @@ public abstract class AbstractMultipartAwareLivingEntity extends LivingEntity im
         nextDamagedPart = part;
     }
 
+    @Override
+    public void setPos(final double x, final double y, final double z) {
+        super.setPos(x, y, z);
+        if (bounds == null) {
+            bounds = createBounds();
+        }
+    }
+
     /**
      * @return This is needed for multipart entities
      */
@@ -59,7 +75,7 @@ public abstract class AbstractMultipartAwareLivingEntity extends LivingEntity im
         if (noClip) {
             return false;
         } else {
-            return world.getBlockCollisions(this, getBoundingBox(), (blockState, blockPos) -> blockState.shouldSuffocate(world, blockPos)).findAny().isPresent();
+            return world.getBlockCollisions(this, getBoundingBox().expand(-0.1), (blockState, blockPos) -> blockState.shouldSuffocate(world, blockPos)).findAny().isPresent();
         }
     }
 

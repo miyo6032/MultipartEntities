@@ -10,14 +10,18 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class EntityPart {
     private boolean changed = true;
+    private double offX,offY,offZ;
     private double x, y, z;
     private final Box box;
     private double px, py, pz;
     private QuaternionD rotation;
     private @Nullable EntityPart parent;
 
-    EntityPart(final @Nullable EntityPart parent, Box box, final boolean center) {
+    EntityPart(final @Nullable EntityPart parent, Box box, final boolean center, double offX, double offY, double offZ) {
         this.parent = parent;
+        this.offX = offX;
+        this.offY = offY;
+        this.offZ = offZ;
         rotation = QuaternionD.IDENTITY;
         if (center) {
             box = box.offset(-box.minX - box.getXLength() / 2, -box.minY - box.getXLength() / 2, -box.minZ - box.getXLength() / 2);
@@ -29,11 +33,26 @@ public final class EntityPart {
         this.parent = parent;
     }
 
+    public void setOffX(double offX) {
+        this.offX = offX;
+        changed = true;
+    }
+
+    public void setOffY(double offY) {
+        this.offY = offY;
+        changed = true;
+    }
+
+    public void setOffZ(double offZ) {
+        this.offZ = offZ;
+        changed = true;
+    }
+
     /**
      * @param x X coordinate relative to parent
      */
     public void setX(final double x) {
-        this.x = x;
+        this.x = x+offX;
         changed = true;
     }
 
@@ -41,7 +60,7 @@ public final class EntityPart {
      * @param y Y coordinate relative to parent
      */
     public void setY(final double y) {
-        this.y = y;
+        this.y = y+offY;
         changed = true;
     }
 
@@ -49,7 +68,7 @@ public final class EntityPart {
      * @param z Z coordinate relative to parent
      */
     public void setZ(final double z) {
-        this.z = z;
+        this.z = z+offZ;
         changed = true;
     }
 
