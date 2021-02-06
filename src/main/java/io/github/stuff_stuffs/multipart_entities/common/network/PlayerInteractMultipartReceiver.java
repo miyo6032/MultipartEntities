@@ -5,7 +5,6 @@ import io.github.stuff_stuffs.multipart_entities.common.entity.MultipartAwareEnt
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -26,12 +25,12 @@ public class PlayerInteractMultipartReceiver {
             final ServerWorld world = serverPlayerEntity.getServerWorld();
             final Entity entity = world.getEntityById(entityId);
             assert entity != null;
-            if (interactionType == PlayerInteractMultipartEntity.InteractionType.ATTACK && entity instanceof MultipartAwareEntity) {
-                ((MultipartAwareEntity) entity).setNextDamagedPart(part);
-            }
             if (interactionType == PlayerInteractMultipartEntity.InteractionType.INTERACT) {
                 entity.interact(serverPlayerEntity, hand);
-            } else if (interactionType == PlayerInteractMultipartEntity.InteractionType.ATTACK && entity instanceof LivingEntity) {
+            } else if (interactionType == PlayerInteractMultipartEntity.InteractionType.ATTACK) {
+                if (entity instanceof MultipartAwareEntity) {
+                    ((MultipartAwareEntity) entity).setNextDamagedPart(part);
+                }
                 serverPlayerEntity.attack(entity);
             } else {
                 throw new RuntimeException();
