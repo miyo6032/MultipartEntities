@@ -25,10 +25,9 @@ public class PlayerInteractMultipartReceiver {
             serverPlayerEntity.setSneaking(isSneaking);
             final ServerWorld world = serverPlayerEntity.getServerWorld();
             final Entity entity = world.getEntityById(entityId);
-            if (entity instanceof MultipartAwareEntity) {
+            assert entity != null;
+            if (interactionType == PlayerInteractMultipartEntity.InteractionType.ATTACK && entity instanceof MultipartAwareEntity) {
                 ((MultipartAwareEntity) entity).setNextDamagedPart(part);
-            } else {
-                throw new RuntimeException();
             }
             if (interactionType == PlayerInteractMultipartEntity.InteractionType.INTERACT) {
                 entity.interact(serverPlayerEntity, hand);
