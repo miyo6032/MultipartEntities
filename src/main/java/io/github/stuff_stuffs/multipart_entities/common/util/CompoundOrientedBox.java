@@ -41,7 +41,7 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
     public Box expand(final double x, final double y, final double z) {
         final List<OrientedBox> orientedBoxes = new ObjectArrayList<>(boxes.size());
         for (final OrientedBox box : boxes) {
-            orientedBoxes.add(box.expand(x,y,z));
+            orientedBoxes.add(box.expand(x, y, z));
         }
         if (cached != null) {
             return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z));
@@ -166,13 +166,17 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
         return new CompoundOrientedBox(bounds, new ObjectArrayList<>(boxes));
     }
 
-    public double calculateMaxDistance(final Direction.Axis axis, final VoxelShape voxelShape, double maxDist) {
-        for (final Box boundingBox : toVoxelShape().getBoundingBoxes()) {
-            maxDist = voxelShape.calculateMaxDistance(axis, boundingBox, maxDist);
-            if (Math.abs(maxDist) < 0.0001) {
-                return 0;
+    public Vec3d calculateMaxDistance(final VoxelShape voxelShape) {
+        Vec3d separation = null;
+        for (final Box boundingBox : voxelShape.getBoundingBoxes()) {
+            final Vec3d[] vertices = OrientedBox.getVertices(boundingBox);
+            for (final OrientedBox orientedBox : boxes) {
+                final Vec3d separationT = orientedBox.calculateMaxDist(vertices, separation == null ? Double.MAX_VALUE : separation.lengthSquared());
+                if (separationT != null) {
+                    separation = separationT;
+                }
             }
         }
-        return maxDist;
+        return separation;
     }
 }

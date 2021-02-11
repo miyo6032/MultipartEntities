@@ -263,36 +263,67 @@ public final class OrientedBox {
         return getExtents().contains(transX, transY, transZ);
     }
 
-    public double getMax(final Direction.Axis axis) {
-        final Matrix3d matrix = getMatrix();
-        switch (axis) {
-            case X:
-                return Math.max(matrix.m00, Math.max(matrix.m01, matrix.m02)) * halfExtents.x + center.x;
-            case Y:
-                return Math.max(matrix.m10, Math.max(matrix.m11, matrix.m12)) * halfExtents.y + center.y;
-            case Z:
-                return Math.max(matrix.m20, Math.max(matrix.m21, matrix.m22)) * halfExtents.z + center.z;
-        }
-        throw new NullPointerException();
-    }
-
-    public double getMin(final Direction.Axis axis) {
-        final Matrix3d matrix = getMatrix();
-        switch (axis) {
-            case X:
-                return Math.min(matrix.m00, Math.min(matrix.m01, matrix.m02)) * halfExtents.x + center.x;
-            case Y:
-                return Math.min(matrix.m10, Math.min(matrix.m11, matrix.m12)) * halfExtents.y + center.y;
-            case Z:
-                return Math.min(matrix.m20, Math.min(matrix.m21, matrix.m22)) * halfExtents.z + center.z;
-        }
-        throw new NullPointerException();
-    }
-
-    public OrientedBox expand(double x, double y, double z) {
-        if(x==0&&y==0&&z==0) {
+    public OrientedBox expand(final double x, final double y, final double z) {
+        if (x == 0 && y == 0 && z == 0) {
             return this;
         }
-        return new OrientedBox(center, halfExtents.add(x/2,y/2,z/2), rotation, matrix, inverse, basis);
+        return new OrientedBox(center, halfExtents.add(x / 2, y / 2, z / 2), rotation, matrix, inverse, basis);
+    }
+
+    @Nullable
+    public Vec3d calculateMaxDist(final Vec3d[] otherVertices, final double maxDistSquared) {
+        if (vertices == null) {
+            computeVertices();
+        }
+        Vec3d bestAxis = null;
+        double bestDist = maxDistSquared;
+        final Vec3d[] vertices1 = vertices;
+        final Vec3d[] normals1 = getBasis();
+        for (final Vec3d normal : normals1) {
+            final double t = satDist(normal, vertices1, otherVertices);
+            if (t * t < bestDist) {
+                bestAxis = normal;
+                bestDist = t * t;
+            }
+        }
+        final Vec3d[] normals2 = Matrix3d.IDENTITY_BASIS;
+        for (final Vec3d normal : normals2) {
+            final double t = satDist(normal, vertices1, otherVertices);
+            if (t * t < bestDist) {
+                bestAxis = normal;
+                bestDist = t * t;
+            }
+        }
+        for (int i = 0; i < normals1.length; i++) {
+            for (int j = i; j < normals2.length; j++) {
+                final Vec3d normal = cross(normals1[i], normals2[j]);
+                final double t = satDist(normal, vertices1, otherVertices);
+                if (t * t < bestDist) {
+                    bestAxis = normal;
+                    bestDist = t * t;
+                }
+            }
+        }
+        return bestAxis == null ? null : bestAxis.multiply(bestDist);
+    }
+
+    private static double satDist(final Vec3d normal, final Vec3d[] vertices1, final Vec3d[] vertices2) {
+        double min1 = Double.MAX_VALUE;
+        double max1 = -Double.MAX_VALUE;
+        for (final Vec3d d : vertices1) {
+            final double v = d.dotProduct(normal);
+            min1 = Math.min(min1, v);
+            max1 = Math.max(max1, v);
+        }
+        double min2 = Double.MAX_VALUE;
+        double max2 = -Double.MAX_VALUE;
+        for (final Vec3d vec3d : vertices2) {
+            final double v = vec3d.dotProduct(normal);
+            min2 = Math.min(min2, v);
+            max2 = Math.max(max2, v);
+        }
+        final double dif1 = max2 - min1;
+        final double dif2 = max1 - min2;
+        return Math.max(Math.abs(dif1), Math.abs(dif2));
     }
 }
