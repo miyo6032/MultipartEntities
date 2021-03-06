@@ -27,6 +27,9 @@ public final class EntityPart {
             box = box.offset(-box.minX - box.getXLength() / 2, -box.minY - box.getXLength() / 2, -box.minZ - box.getXLength() / 2);
         }
         this.box = box;
+        setX(0.0);
+        setY(0.0);
+        setZ(0.0);
     }
 
     void setParent(@Nullable final EntityPart parent) {
