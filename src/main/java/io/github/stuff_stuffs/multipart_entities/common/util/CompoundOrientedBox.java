@@ -21,20 +21,23 @@ import java.util.Optional;
 public final class CompoundOrientedBox extends Box implements Iterable<OrientedBox> {
     private final Collection<OrientedBox> boxes;
     private VoxelShape cached;
+    private final double resolution;
 
-    public CompoundOrientedBox(final Box bounds, final Collection<OrientedBox> boxes) {
-        this(bounds.minX, bounds.minY, bounds.minZ, bounds.maxX, bounds.maxY, bounds.maxZ, boxes);
+    public CompoundOrientedBox(final Box bounds, final Collection<OrientedBox> boxes, double resolution) {
+        this(bounds.minX, bounds.minY, bounds.minZ, bounds.maxX, bounds.maxY, bounds.maxZ, boxes, resolution);
     }
 
-    public CompoundOrientedBox(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final Collection<OrientedBox> boxes) {
+    public CompoundOrientedBox(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final Collection<OrientedBox> boxes, double resolution) {
         super(minX, minY, minZ, maxX, maxY, maxZ);
         this.boxes = boxes;
+        this.resolution = resolution;
     }
 
-    private CompoundOrientedBox(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final Collection<OrientedBox> boxes, final VoxelShape cached) {
+    private CompoundOrientedBox(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final Collection<OrientedBox> boxes, final VoxelShape cached, double resolution) {
         super(minX, minY, minZ, maxX, maxY, maxZ);
         this.boxes = boxes;
         this.cached = cached;
+        this.resolution = resolution;
     }
 
     @Override
@@ -44,9 +47,9 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
             orientedBoxes.add(box.expand(x,y,z));
         }
         if (cached != null) {
-            return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z));
+            return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z), resolution);
         }
-        return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes);
+        return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, resolution);
     }
 
     @Override
@@ -56,9 +59,9 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
             orientedBoxes.add(box.offset(x, y, z));
         }
         if (cached != null) {
-            return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z));
+            return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z), resolution);
         }
-        return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes);
+        return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes, resolution);
     }
 
     @Override
@@ -106,8 +109,6 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
         return false;
     }
 
-    private static final double RESOLUTION = 4;
-
     public VoxelShape toVoxelShape() {
         if (cached != null) {
             return cached;
@@ -119,17 +120,17 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
         final double deltaX = getMax(Direction.Axis.X) - minX;
         final double deltaY = getMax(Direction.Axis.Y) - minY;
         final double deltaZ = getMax(Direction.Axis.Z) - minZ;
-        final int xResolution = (int) Math.ceil(deltaX * RESOLUTION + 0.0001);
-        final int yResolution = (int) Math.ceil(deltaY * RESOLUTION + 0.0001);
-        final int zResolution = (int) Math.ceil(deltaZ * RESOLUTION + 0.0001);
+        final int xResolution = (int) Math.ceil(deltaX * resolution + 0.0001);
+        final int yResolution = (int) Math.ceil(deltaY * resolution + 0.0001);
+        final int zResolution = (int) Math.ceil(deltaZ * resolution + 0.0001);
 
         final BitSetVoxelSet bitSet = new BitSetVoxelSet(xResolution, yResolution, zResolution);
         for (int i = 0; i < xResolution; i++) {
-            final double x = minX + i / RESOLUTION;
+            final double x = minX + i / resolution;
             for (int j = 0; j < zResolution; j++) {
-                final double z = minZ + j / RESOLUTION;
+                final double z = minZ + j / resolution;
                 for (int k = 0; k < yResolution; k++) {
-                    final double y = minY + k / RESOLUTION;
+                    final double y = minY + k / resolution;
                     final Box box = new Box(x, y, z, x + 0.9999 / xResolution, y + 0.9999 / yResolution, z + 0.9999 / zResolution);
                     if (intersects(box)) {
                         bitSet.set(i, k, j, true, true);
@@ -139,15 +140,15 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
         }
         final DoubleList xPoints = new DoubleArrayList(xResolution + 1);
         for (int i = 0; i < xResolution + 1; i++) {
-            xPoints.add(minX + i / RESOLUTION);
+            xPoints.add(minX + i / resolution);
         }
         final DoubleList yPoints = new DoubleArrayList(yResolution + 1);
         for (int i = 0; i < yResolution + 1; i++) {
-            yPoints.add(minY + i / RESOLUTION);
+            yPoints.add(minY + i / resolution);
         }
         final DoubleList zPoints = new DoubleArrayList(zResolution + 1);
         for (int i = 0; i < zResolution + 1; i++) {
-            zPoints.add(minZ + i / RESOLUTION);
+            zPoints.add(minZ + i / resolution);
         }
         return cached = InvokerArrayVoxelShape.init(bitSet, xPoints, yPoints, zPoints);
     }
@@ -163,7 +164,7 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
     }
 
     public CompoundOrientedBox withBounds(final Box bounds) {
-        return new CompoundOrientedBox(bounds, new ObjectArrayList<>(boxes));
+        return new CompoundOrientedBox(bounds, new ObjectArrayList<>(boxes), resolution);
     }
 
     public double calculateMaxDistance(final Direction.Axis axis, final VoxelShape voxelShape, double maxDist) {

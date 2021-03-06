@@ -18,9 +18,11 @@ import java.util.Map;
 public final class EntityBounds {
     private CompoundOrientedBox cache;
     private final Map<String, EntityPart> partMap;
+    private final double resolution;
 
-    EntityBounds(final Map<String, EntityPart> partMap) {
+    EntityBounds(final Map<String, EntityPart> partMap, double resolution) {
         this.partMap = partMap;
+        this.resolution = resolution;
     }
 
     public boolean hasPart(final String name) {
@@ -70,7 +72,7 @@ public final class EntityBounds {
             for (final EntityPart value : partMap.values()) {
                 parts.add(value.getBox());
             }
-            cache = new CompoundOrientedBox(bounds, parts);
+            cache = new CompoundOrientedBox(bounds, parts, resolution);
         }
         return cache.withBounds(bounds);
     }
@@ -91,6 +93,7 @@ public final class EntityBounds {
 
     public static final class EntityBoundsBuilder {
         private final Map<String, EntityPartInfo> partInfos = new Object2ObjectLinkedOpenHashMap<>();
+        private double resolution = 4.0;
 
         EntityBoundsBuilder() {
         }
@@ -100,6 +103,20 @@ public final class EntityBounds {
                 throw new RuntimeException("Unknown part: " + info.parent + ", did you register a child before a parent");
             }
             partInfos.put(info.name, info);
+            return this;
+        }
+
+        /**
+         * Sets the resolution for voxel shape calculations
+         *
+         * @param resolution A number from 1.0 to 4.0 - Default 4.0 lower uses cruder shapes, but is more efficient
+         * @return The hit box builder
+         */
+        public EntityBoundsBuilder setVoxelShapeResolution(double resolution) {
+            if(resolution < 1.0 || resolution > 4.0) {
+                throw new IllegalArgumentException("Resolution must be between or equal to 1.0 and 4.0");
+            }
+            this.resolution = resolution;
             return this;
         }
 
@@ -129,7 +146,7 @@ public final class EntityBounds {
                     entityPart.setPivotZ(info.pz);
                     partMap.put(entry.getKey(), entityPart);
                 }
-                return new EntityBounds(partMap);
+                return new EntityBounds(partMap, resolution);
             };
         }
     }
