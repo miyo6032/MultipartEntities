@@ -1,6 +1,7 @@
 package io.github.stuff_stuffs.multipart_entities.common.util;
 
 import com.google.common.collect.Iterators;
+import io.github.stuff_stuffs.multipart_entities.common.entity.MutableBox;
 import io.github.stuff_stuffs.multipart_entities.mixin.common.InvokerArrayVoxelShape;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
@@ -11,7 +12,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,23 +24,23 @@ import java.util.Optional;
 public final class CompoundOrientedBox extends Box implements Iterable<OrientedBox> {
     private final Collection<OrientedBox> boxes;
     private VoxelShape cached;
-    private final double resolution;
+    private final @Nullable MutableBox overrideBox;
 
-    public CompoundOrientedBox(final Box bounds, final Collection<OrientedBox> boxes, double resolution) {
-        this(bounds.minX, bounds.minY, bounds.minZ, bounds.maxX, bounds.maxY, bounds.maxZ, boxes, resolution);
+    public CompoundOrientedBox(final Box bounds, final Collection<OrientedBox> boxes, MutableBox overrideBox) {
+        this(bounds.minX, bounds.minY, bounds.minZ, bounds.maxX, bounds.maxY, bounds.maxZ, boxes, overrideBox);
     }
 
-    public CompoundOrientedBox(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final Collection<OrientedBox> boxes, double resolution) {
+    public CompoundOrientedBox(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final Collection<OrientedBox> boxes, @Nullable MutableBox overrideBox) {
         super(minX, minY, minZ, maxX, maxY, maxZ);
         this.boxes = boxes;
-        this.resolution = resolution;
+        this.overrideBox = overrideBox;
     }
 
-    private CompoundOrientedBox(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final Collection<OrientedBox> boxes, final VoxelShape cached, double resolution) {
+    private CompoundOrientedBox(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final Collection<OrientedBox> boxes, final VoxelShape cached, @Nullable MutableBox overrideBox) {
         super(minX, minY, minZ, maxX, maxY, maxZ);
         this.boxes = boxes;
         this.cached = cached;
-        this.resolution = resolution;
+        this.overrideBox = overrideBox;
     }
 
     @Override
@@ -47,9 +50,9 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
             orientedBoxes.add(box.expand(x,y,z));
         }
         if (cached != null) {
-            return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z), resolution);
+            return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z), overrideBox);
         }
-        return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, resolution);
+        return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, overrideBox);
     }
 
     @Override
@@ -59,9 +62,9 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
             orientedBoxes.add(box.offset(x, y, z));
         }
         if (cached != null) {
-            return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z), resolution);
+            return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z), overrideBox);
         }
-        return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes, resolution);
+        return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes, overrideBox);
     }
 
     @Override
@@ -113,6 +116,10 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
         if (cached != null) {
             return cached;
         }
+        if(overrideBox != null) {
+            cached = VoxelShapes.cuboid(overrideBox.getBox());
+            return cached;
+        }
         final double minX = getMin(Direction.Axis.X) + 0.0001;
         final double minY = getMin(Direction.Axis.Y) + 0.0001;
         final double minZ = getMin(Direction.Axis.Z) + 0.0001;
@@ -120,6 +127,7 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
         final double deltaX = getMax(Direction.Axis.X) - minX;
         final double deltaY = getMax(Direction.Axis.Y) - minY;
         final double deltaZ = getMax(Direction.Axis.Z) - minZ;
+        double resolution = 4.0;
         final int xResolution = (int) Math.ceil(deltaX * resolution + 0.0001);
         final int yResolution = (int) Math.ceil(deltaY * resolution + 0.0001);
         final int zResolution = (int) Math.ceil(deltaZ * resolution + 0.0001);
@@ -164,7 +172,7 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
     }
 
     public CompoundOrientedBox withBounds(final Box bounds) {
-        return new CompoundOrientedBox(bounds, new ObjectArrayList<>(boxes), resolution);
+        return new CompoundOrientedBox(bounds, new ObjectArrayList<>(boxes), overrideBox);
     }
 
     public double calculateMaxDistance(final Direction.Axis axis, final VoxelShape voxelShape, double maxDist) {

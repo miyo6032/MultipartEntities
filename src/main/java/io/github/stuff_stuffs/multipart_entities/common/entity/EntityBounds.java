@@ -18,11 +18,15 @@ import java.util.Map;
 public final class EntityBounds {
     private CompoundOrientedBox cache;
     private final Map<String, EntityPart> partMap;
-    private final double resolution;
+    private @Nullable final MutableBox overrideBox;
 
-    EntityBounds(final Map<String, EntityPart> partMap, double resolution) {
+    EntityBounds(final Map<String, EntityPart> partMap, @Nullable Box overrideBox) {
         this.partMap = partMap;
-        this.resolution = resolution;
+        this.overrideBox = new MutableBox(overrideBox);
+    }
+
+    public @Nullable MutableBox getOverrideBox() {
+        return overrideBox;
     }
 
     public boolean hasPart(final String name) {
@@ -72,7 +76,7 @@ public final class EntityBounds {
             for (final EntityPart value : partMap.values()) {
                 parts.add(value.getBox());
             }
-            cache = new CompoundOrientedBox(bounds, parts, resolution);
+            cache = new CompoundOrientedBox(bounds, parts, overrideBox);
         }
         return cache.withBounds(bounds);
     }
@@ -93,7 +97,7 @@ public final class EntityBounds {
 
     public static final class EntityBoundsBuilder {
         private final Map<String, EntityPartInfo> partInfos = new Object2ObjectLinkedOpenHashMap<>();
-        private double resolution = 4.0;
+        private Box overrideBox = null;
 
         EntityBoundsBuilder() {
         }
@@ -106,17 +110,8 @@ public final class EntityBounds {
             return this;
         }
 
-        /**
-         * Sets the resolution for voxel shape calculations
-         *
-         * @param resolution A number from 1.0 to 4.0 - Default 4.0 lower uses cruder shapes, but is more efficient
-         * @return The hit box builder
-         */
-        public EntityBoundsBuilder setVoxelShapeResolution(double resolution) {
-            if(resolution < 1.0 || resolution > 4.0) {
-                throw new IllegalArgumentException("Resolution must be between or equal to 1.0 and 4.0");
-            }
-            this.resolution = resolution;
+        public EntityBoundsBuilder overrideCollisionBox(Box box) {
+            this.overrideBox = box;
             return this;
         }
 
@@ -146,7 +141,7 @@ public final class EntityBounds {
                     entityPart.setPivotZ(info.pz);
                     partMap.put(entry.getKey(), entityPart);
                 }
-                return new EntityBounds(partMap, resolution);
+                return new EntityBounds(partMap, overrideBox);
             };
         }
     }
