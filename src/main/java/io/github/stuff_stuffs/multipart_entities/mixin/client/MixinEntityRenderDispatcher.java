@@ -9,7 +9,6 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShapes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,10 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderDispatcher.class)
 public class MixinEntityRenderDispatcher {
-    @Inject(method = "drawBox", at = @At("RETURN"))
-    private void drawOrientedBoxes(final MatrixStack matrix, final VertexConsumer vertices, final Entity entity, final float red, final float green, final float blue, final CallbackInfo ci) {
+    @Inject(method = "renderHitbox", at = @At("RETURN"))
+    private static void drawOrientedBoxes(MatrixStack matrix, VertexConsumer vertices, Entity entity, float tickDelta, CallbackInfo ci) {
         if (entity instanceof MultipartEntity) {
-            final CompoundOrientedBox box = ((MultipartEntity) entity).getBoundingBox();
+            final CompoundOrientedBox box = ((MultipartEntity) entity).getCompoundBoundingBox();
             matrix.push();
             matrix.translate(-entity.getX(), -entity.getY(), -entity.getZ());
             for (final OrientedBox orientedBox : box) {
@@ -31,7 +30,7 @@ public class MixinEntityRenderDispatcher {
                 WorldRenderer.drawBox(matrix, vertices, orientedBox.getExtents(), 0, 0, 1, 1);
                 matrix.pop();
             }
-            box.toVoxelShape().forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> WorldRenderer.drawBox(matrix, vertices, minX, minY, minZ, maxX, maxY, maxZ, 0, green, 0, 1f));
+            box.toVoxelShape().forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> WorldRenderer.drawBox(matrix, vertices, minX, minY, minZ, maxX, maxY, maxZ, 0, 1, 0, 1f));
             matrix.pop();
         }
     }

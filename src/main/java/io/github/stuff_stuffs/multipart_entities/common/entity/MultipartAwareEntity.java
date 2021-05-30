@@ -15,6 +15,7 @@ public interface MultipartAwareEntity extends MultipartEntity {
      */
     EntityBounds getBounds();
 
+    void onSetPos(final double x, final double y, final double z);
 
     /**
      * This is an ugly hack to not interfere with the vanilla damage logic.

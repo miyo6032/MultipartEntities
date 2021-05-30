@@ -141,7 +141,7 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
                     final double y = minY + k / resolution;
                     final Box box = new Box(x, y, z, x + 0.9999 / xResolution, y + 0.9999 / yResolution, z + 0.9999 / zResolution);
                     if (intersects(box)) {
-                        bitSet.set(i, k, j, true, true);
+                        bitSet.set(i, k, j);
                     }
                 }
             }

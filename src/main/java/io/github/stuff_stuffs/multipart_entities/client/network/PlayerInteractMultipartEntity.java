@@ -21,7 +21,7 @@ public class PlayerInteractMultipartEntity {
         final String part = entity.getBounds().raycast(pos, pos.add(dir.multiply(reach)));
         if (part != null) {
             final PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeVarInt(((Entity) entity).getEntityId());
+            buf.writeVarInt(((Entity) entity).getId());
             buf.writeString(part);
             buf.writeEnumConstant(InteractionType.ATTACK);
             buf.writeEnumConstant(hand);
@@ -37,7 +37,7 @@ public class PlayerInteractMultipartEntity {
         final String part = entity.getBounds().raycast(pos, pos.add(dir.multiply(reach)));
         if (part != null) {
             final PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeVarInt(((Entity) entity).getEntityId());
+            buf.writeVarInt(((Entity) entity).getId());
             buf.writeString(part);
             buf.writeEnumConstant(InteractionType.INTERACT);
             buf.writeEnumConstant(hand);
