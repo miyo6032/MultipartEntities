@@ -15,7 +15,7 @@ public abstract class MixinEntity {
     @Inject(method = "getBoundingBox", at = @At("RETURN"), cancellable = true)
     private void getBoundingBox(CallbackInfoReturnable<Box> cir) {
         if (this instanceof MultipartEntity) {
-            cir.setReturnValue(((MultipartEntity) this).getCompoundBoundingBox());
+            cir.setReturnValue(((MultipartEntity) this).getCompoundBoundingBox(cir.getReturnValue()));
         }
     }
 
