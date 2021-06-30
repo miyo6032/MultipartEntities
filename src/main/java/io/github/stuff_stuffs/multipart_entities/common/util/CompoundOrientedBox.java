@@ -49,6 +49,12 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
         for (final OrientedBox box : boxes) {
             orientedBoxes.add(box.expand(x,y,z));
         }
+
+        MutableBox overrideBox = null;
+        if(this.overrideBox != null) {
+            overrideBox = new MutableBox(this.overrideBox.getBox().expand(x, y, z));
+        }
+
         if (cached != null) {
             return new CompoundOrientedBox(minX - x, minY - y, minZ - z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z), overrideBox);
         }
@@ -61,6 +67,12 @@ public final class CompoundOrientedBox extends Box implements Iterable<OrientedB
         for (final OrientedBox box : boxes) {
             orientedBoxes.add(box.offset(x, y, z));
         }
+
+        MutableBox overrideBox = null;
+        if(this.overrideBox != null) {
+            overrideBox = new MutableBox(this.overrideBox.getBox().offset(x, y, z));
+        }
+
         if (cached != null) {
             return new CompoundOrientedBox(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z, orientedBoxes, cached.offset(x, y, z), overrideBox);
         }
