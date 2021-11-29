@@ -22,7 +22,7 @@ public class PlayerInteractMultipartReceiver {
         final boolean isSneaking = packetByteBuf.readBoolean();
         minecraftServer.execute(() -> {
             serverPlayerEntity.setSneaking(isSneaking);
-            final ServerWorld world = serverPlayerEntity.getServerWorld();
+            final ServerWorld world = serverPlayerEntity.getWorld();
             final Entity entity = world.getEntityById(entityId);
             assert entity != null;
             if (interactionType == PlayerInteractMultipartEntity.InteractionType.INTERACT) {
