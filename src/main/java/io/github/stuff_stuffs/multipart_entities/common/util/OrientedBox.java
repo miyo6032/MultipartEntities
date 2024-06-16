@@ -17,7 +17,7 @@ public final class OrientedBox {
 
     public OrientedBox(final Box box) {
         center = box.getCenter();
-        halfExtents = new Vec3d(box.getXLength() / 2, box.getYLength() / 2, box.getZLength() / 2);
+        halfExtents = new Vec3d(box.getLengthX() / 2, box.getLengthY() / 2, box.getLengthZ() / 2);
         rotation = QuaternionD.IDENTITY;
     }
 

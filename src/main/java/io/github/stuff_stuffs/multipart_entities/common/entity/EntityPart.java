@@ -24,7 +24,7 @@ public final class EntityPart {
         this.offZ = offZ;
         rotation = QuaternionD.IDENTITY;
         if (center) {
-            box = box.offset(-box.minX - box.getXLength() / 2, -box.minY - box.getXLength() / 2, -box.minZ - box.getXLength() / 2);
+            box = box.offset(-box.minX - box.getLengthX() / 2, -box.minY - box.getLengthX() / 2, -box.minZ - box.getLengthX() / 2);
         }
         this.box = box;
         setX(0.0);

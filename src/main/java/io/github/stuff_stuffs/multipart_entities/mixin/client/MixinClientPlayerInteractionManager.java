@@ -34,7 +34,7 @@ public abstract class MixinClientPlayerInteractionManager {
                 final MinecraftClient client = MinecraftClient.getInstance();
                 final Vec3d pos = client.cameraEntity.getCameraPosVec(client.getTickDelta());
                 final Vec3d dir = client.cameraEntity.getRotationVec(client.getTickDelta());
-                final double reach = client.interactionManager.getReachDistance();
+                final double reach = client.player.getEntityInteractionRange();
                 ((MultipartAwareEntity) target).setNextDamagedPart(((MultipartAwareEntity) target).getBounds().raycast(pos, pos.add(dir.multiply(reach))));
                 player.attack(target);
                 player.resetLastAttackedTicks();
