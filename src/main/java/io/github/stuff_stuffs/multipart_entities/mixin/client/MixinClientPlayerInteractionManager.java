@@ -32,8 +32,8 @@ public abstract class MixinClientPlayerInteractionManager {
             PlayerInteractMultipartEntity.attack(MinecraftClient.getInstance(), Hand.MAIN_HAND, (MultipartAwareEntity) target);
             if (gameMode != GameMode.SPECTATOR) {
                 final MinecraftClient client = MinecraftClient.getInstance();
-                final Vec3d pos = client.cameraEntity.getCameraPosVec(client.getTickDelta());
-                final Vec3d dir = client.cameraEntity.getRotationVec(client.getTickDelta());
+                final Vec3d pos = client.cameraEntity.getCameraPosVec(client.getRenderTickCounter().getTickDelta(true));
+                final Vec3d dir = client.cameraEntity.getRotationVec(client.getRenderTickCounter().getTickDelta(true));
                 final double reach = client.player.getEntityInteractionRange();
                 ((MultipartAwareEntity) target).setNextDamagedPart(((MultipartAwareEntity) target).getBounds().raycast(pos, pos.add(dir.multiply(reach))));
                 player.attack(target);

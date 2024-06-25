@@ -12,8 +12,8 @@ import net.minecraft.util.math.Vec3d;
 public class PlayerInteractMultipartEntity {
 
     public static void attack(final MinecraftClient client, final Hand hand, final MultipartAwareEntity entity) {
-        final Vec3d pos = client.cameraEntity.getCameraPosVec(client.getTickDelta());
-        final Vec3d dir = client.cameraEntity.getRotationVec(client.getTickDelta());
+        final Vec3d pos = client.cameraEntity.getCameraPosVec(client.getRenderTickCounter().getTickDelta(true));
+        final Vec3d dir = client.cameraEntity.getRotationVec(client.getRenderTickCounter().getTickDelta(true));
         final double reach = client.player.getEntityInteractionRange();
         final String part = entity.getBounds().raycast(pos, pos.add(dir.multiply(reach)));
         if (part != null) {
@@ -25,8 +25,8 @@ public class PlayerInteractMultipartEntity {
     }
 
     public static ActionResult interact(final MinecraftClient client, final Hand hand, final MultipartAwareEntity entity) {
-        final Vec3d pos = client.cameraEntity.getCameraPosVec(client.getTickDelta());
-        final Vec3d dir = client.cameraEntity.getRotationVec(client.getTickDelta());
+        final Vec3d pos = client.cameraEntity.getCameraPosVec(client.getRenderTickCounter().getTickDelta(true));
+        final Vec3d dir = client.cameraEntity.getRotationVec(client.getRenderTickCounter().getTickDelta(true));
         final double reach = client.player.getEntityInteractionRange();
         final String part = entity.getBounds().raycast(pos, pos.add(dir.multiply(reach)));
         if (part != null) {

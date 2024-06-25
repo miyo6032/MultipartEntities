@@ -8,7 +8,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
 public record InteractPacket(int id, String part, PlayerInteractMultipartEntity.InteractionType interactionType, Hand hand, boolean isSneaking) implements CustomPayload {
-    public static final CustomPayload.Id<InteractPacket> PACKET_ID = new CustomPayload.Id<>(new Identifier("multipart_entities", "interact"));
+    public static final CustomPayload.Id<InteractPacket> PACKET_ID = new CustomPayload.Id<>(Identifier.of("multipart_entities", "interact"));
     public static final PacketCodec<RegistryByteBuf, InteractPacket> PACKET_CODEC = PacketCodec.ofStatic(InteractPacket::write2, InteractPacket::new);
 
     public static void write2(RegistryByteBuf buf, InteractPacket packet) {
